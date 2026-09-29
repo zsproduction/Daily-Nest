@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Daily Space — a simple private-feeling planner and diary web app." />
+  <title>Daily Space — Planner & Diary</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:rgba(255,255,255,.82);
+      --text:#172033;
+      --muted:#667085;
+      --line:#e6eaf0;
+      --primary:#6c63ff;
+      --primary-2:#8c7bff;
+      --good:#23a26d;
+      --danger:#e05252;
+      --shadow:0 18px 50px rgba(27,39,74,.10);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(140,123,255,.18), transparent 28%),
+        radial-gradient(circle at 90% 0%, rgba(99,213,191,.15), transparent 28%),
+        var(--bg);
+      min-height:100vh;
+    }
+    .container{max-width:1150px;margin:auto;padding:24px}
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;margin-bottom:26px;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:46px;height:46px;border-radius:16px;
+      display:grid;place-items:center;color:#fff;font-size:23px;
+      background:linear-gradient(135deg,var(--primary),var(--primary-2));
+      box-shadow:0 12px 28px rgba(108,99,255,.25);
+    }
+    h1,h2,h3,p{margin-top:0}
+    h1{font-size:1.45rem;margin-bottom:2px}
+    .subtitle{color:var(--muted);font-size:.92rem}
+    button,input,textarea{font:inherit}
+    button{
+      border:0;cursor:pointer;border-radius:14px;padding:11px 16px;
+      transition:.18s ease; 
+    }
+    button:hover{transform:translateY(-1px)}
+    .ghost{background:#fff;border:1px solid var(--line);color:var(--text)}
+    .primary{background:var(--primary);color:#fff;box-shadow:0 10px 20px rgba(108,99,255,.20)}
+    .danger{background:#fff0f0;color:var(--danger)}
+    .grid{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:20px;
+    }
+    .card{
+      background:var(--card);backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,.65);box-shadow:var(--shadow);
+      border-radius:var(--radius);padding:22px;
+    }
+    .hero{
+      margin-bottom:20px;padding:28px;
+      background:linear-gradient(135deg,rgba(108,99,255,.10),rgba(255,255,255,.82));
+    }
+    .hero h2{font-size:clamp(1.7rem,4vw,2.5rem);margin-bottom:8px}
+    .hero p{color:var(--muted);max-width:700px;line-height:1.6;margin-bottom:18px}
+    .stats{display:flex;gap:10px;flex-wrap:wrap}
+    .stat{
+      padding:10px 13px;border:1px solid var(--line);border-radius:14px;
+      background:#fff;font-size:.92rem
+    }
+    .tabs{display:flex;gap:8px;margin-bottom:16px}
+    .tab{background:#eef0f7;color:#5e6678}
+    .tab.active{background:var(--primary);color:white}
+    .section-title{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .section-title h3{margin-bottom:4px}
+    .section-title p{margin:0;color:var(--muted);font-size:.86rem}
+    .form-row{display:flex;gap:10px;margin:16px 0}
+    .form-row input{flex:1}
+    input,textarea{
+      width:100%;border:1px solid var(--line);background:#fff;
+      border-radius:14px;padding:12px 14px;outline:none;
+    }
+    input:focus,textarea:focus{border-color:#a9a2ff;box-shadow:0 0 0 4px rgba(108,99,255,.10)}
+    textarea{min-height:190px;resize:vertical;line-height:1.6}
+    .task-list{display:grid;gap:10px;margin-top:14px}
+    .task{
+      display:flex;align-items:center;gap:12px;padding:13px 14px;
+      border:1px solid var(--line);border-radius:16px;background:#fff;
+    }
+    .task.done .task-text{text-decoration:line-through;color:#98a0ae}
+    .check{
+      width:22px;height:22px;border:2px solid #cfd5e2;border-radius:8px;
+      background:#fff;flex:0 0 auto;padding:0;
+    }
+    .check.checked{background:var(--good);border-color:var(--good);color:#fff}
+    .task-text{flex:1}
+    .mini{font-size:.78rem;color:var(--muted)}
+    .diary-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+    .saved{
+      margin-top:14px;padding:12px 14px;border-radius:12px;
+      background:#ecfbf4;color:#26764f;font-size:.88rem;display:none;
+    }
+    .saved.show{display:block}
+    footer{padding:26px 0 10px;color:var(--muted);text-align:center;font-size:.84rem}
+    .empty{color:var(--muted);padding:18px 4px}
+    @media(max-width:850px){.grid{grid-template-columns:1fr}}
+    @media(max-width:560px){
+      .container{padding:16px}
+      header{align-items:flex-start}
+      .hero{padding:22px}
+      .form-row{flex-direction:column}
+      .tabs{overflow:auto}
+      .tab{white-space:nowrap}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">✦</div>
+        <div>
+          <h1>Daily Space</h1>
+          <div class="subtitle">Your simple planner & diary</div>
+        </div>
+      </div>
+      <button class="ghost" id="clearAll">Reset Data</button>
+    </header>
+
+    <section class="card hero">
+      <h2>Plan your day. Keep your thoughts. 🌿</h2>
+      <p>
+        A clean, calming space for tasks and diary notes. Your data is stored in this browser
+        using local storage, so there is no server account required.
+      </p>
+      <div class="stats">
+        <div class="stat">✅ <strong id="remaining">0</strong> tasks left</div>
+        <div class="stat">📚 <strong id="done">0</strong> completed</div>
+        <div class="stat">📝 <strong id="wordCount">0</strong> diary words</div>
+      </div>
+    </section>
+
+    <main class="grid">
+      <section class="card">
+        <div class="section-title">
+          <div>
+            <h3>Today’s tasks</h3>
+            <p>Keep your most important work visible.</p>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <input id="taskInput" type="text" placeholder="Add a task, e.g. Publish my website" maxlength="120" />
+          <button class="primary" id="addTask">Add Task</button>
+        </div>
+
+        <div class="task-list" id="taskList"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <div>
+            <h3>Diary</h3>
+            <p id="todayLabel"></p>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-view="write">Write</button>
+          <button class="tab" data-view="saved">Saved Entry</button>
+        </div>
+
+        <div id="writeView">
+          <textarea id="diaryInput" placeholder="Write your thoughts here..."></textarea>
+          <div class="diary-actions">
+            <button class="ghost" id="clearDiary">Clear</button>
+            <button class="primary" id="saveDiary">Save Entry</button>
+          </div>
+          <div class="saved" id="saveMessage">Saved in this browser ✓</div>
+        </div>
+
+        <div id="savedView" hidden>
+          <div id="savedDiary" class="empty">No diary entry saved yet.</div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Daily Space • Built as a simple static website • No login or server required
+    </footer>
+  </div>
+
+<script>
+  const TASKS_KEY = "daily_space_tasks_v1";
+  const DIARY_KEY = "daily_space_diary_v1";
+
+  const taskInput = document.getElementById("taskInput");
+  const taskList = document.getElementById("taskList");
+  const remaining = document.getElementById("remaining");
+  const done = document.getElementById("done");
+  const diaryInput = document.getElementById("diaryInput");
+  const wordCount = document.getElementById("wordCount");
+  const savedDiary = document.getElementById("savedDiary");
+  const saveMessage = document.getElementById("saveMessage");
+
+  let tasks = JSON.parse(localStorage.getItem(TASKS_KEY) || "[]");
+  let diary = localStorage.getItem(DIARY_KEY) || "";
+
+  function saveTasks(){
+    localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+  }
+
+  function renderTasks(){
+    taskList.innerHTML = "";
+    if(!tasks.length){
+      taskList.innerHTML = '<div class="empty">No tasks yet. Add your first one above.</div>';
+    } else {
+      tasks.forEach((task, i) => {
+        const row = document.createElement("div");
+        row.className = "task" + (task.done ? " done" : "");
+
+        const check = document.createElement("button");
+        check.className = "check" + (task.done ? " checked" : "");
+        check.textContent = task.done ? "✓" : "";
+        check.setAttribute("aria-label", "Mark task complete");
+        check.onclick = () => {
+          tasks[i].done = !tasks[i].done;
+          saveTasks();
+          renderTasks();
+        };
+
+        const text = document.createElement("div");
+        text.className = "task-text";
+        text.textContent = task.text;
+
+        const del = document.createElement("button");
+        del.className = "danger";
+        del.textContent = "Delete";
+        del.onclick = () => {
+          tasks.splice(i, 1);
+          saveTasks();
+          renderTasks();
+        };
+
+        row.append(check, text, del);
+        taskList.appendChild(row);
+      });
+    }
+
+    const completed = tasks.filter(t => t.done).length;
+    done.textContent = completed;
+    remaining.textContent = tasks.length - completed;
+  }
+
+  function addTask(){
+    const text = taskInput.value.trim();
+    if(!text) return;
+    tasks.unshift({text, done:false});
+    taskInput.value = "";
+    saveTasks();
+    renderTasks();
+    taskInput.focus();
+  }
+
+  document.getElementById("addTask").onclick = addTask;
+  taskInput.addEventListener("keydown", e => { if(e.key === "Enter") addTask(); });
+
+  function updateWordCount(text){
+    const count = text.trim() ? text.trim().split(/\s+/).length : 0;
+    wordCount.textContent = count;
+  }
+
+  function showSavedEntry(){
+    if(diary.trim()){
+      const box = document.createElement("div");
+      box.style.whiteSpace = "pre-wrap";
+      box.style.lineHeight = "1.7";
+      box.textContent = diary;
+      savedDiary.innerHTML = "";
+      savedDiary.appendChild(box);
+    } else {
+      savedDiary.textContent = "No diary entry saved yet.";
+    }
+  }
+
+  document.getElementById("saveDiary").onclick = () => {
+    diary = diaryInput.value.trim();
+    localStorage.setItem(DIARY_KEY, diary);
+    updateWordCount(diary);
+    showSavedEntry();
+    saveMessage.classList.add("show");
+    setTimeout(() => saveMessage.classList.remove("show"), 1800);
+  };
+
+  document.getElementById("clearDiary").onclick = () => {
+    diaryInput.value = "";
+    updateWordCount("");
+  };
+
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const write = btn.dataset.view === "write";
+      document.getElementById("writeView").hidden = !write;
+      document.getElementById("savedView").hidden = write;
+      if(!write) showSavedEntry();
+    });
+  });
+
+  document.getElementById("clearAll").onclick = () => {
+    const ok = confirm("Delete all tasks and the saved diary entry from this browser?");
+    if(!ok) return;
+    tasks = [];
+    diary = "";
+    localStorage.removeItem(TASKS_KEY);
+    localStorage.removeItem(DIARY_KEY);
+    diaryInput.value = "";
+    renderTasks();
+    updateWordCount("");
+    showSavedEntry();
+  };
+
+  const date = new Date();
+  document.getElementById("todayLabel").textContent =
+    date.toLocaleDateString(undefined, {weekday:"long", year:"numeric", month:"long", day:"numeric"});
+
+  diaryInput.value = diary;
+  updateWordCount(diary);
+  renderTasks();
+  showSavedEntry();
+</script>
+</body>
+</html>
