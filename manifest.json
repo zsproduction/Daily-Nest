@@ -1,6 +1,6 @@
 {
-  "name": "Daily Space",
-  "short_name": "Daily Space",
+  "name": "Daily Nest",
+  "short_name": "Daily Nest",
   "description": "A simple daily planner and diary.",
   "start_url": "./",
   "scope": "./",
