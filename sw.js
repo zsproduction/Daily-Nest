@@ -1,4 +1,4 @@
-const CACHE_NAME = "daily-space-v1";
+const CACHE_NAME = "daily-Nest-v1";
 
 const FILES_TO_CACHE = [
   "./",
